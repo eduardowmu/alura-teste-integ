@@ -14,17 +14,13 @@ import static br.com.alura.marketplace.domain.util.ValidationUtil.validate;
 @RequiredArgsConstructor
 @Service
 public class CadastroProdutoUseCase {
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
-    @Autowired
-    private PetStoreRepository petStoreRepository;
+    private final PetStoreRepository petStoreRepository;
 
-    @Autowired
-    private BucketRepository bucketRepository;
+    private final BucketRepository bucketRepository;
 
-    @Autowired
-    private QueueRepository queueRepository;
+    private final QueueRepository queueRepository;
 
     public Produto cadastrar(Produto produto) {
         validate(produto);
