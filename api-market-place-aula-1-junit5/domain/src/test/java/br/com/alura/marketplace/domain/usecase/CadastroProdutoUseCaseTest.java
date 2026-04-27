@@ -12,6 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -84,6 +87,64 @@ class CadastroProdutoUseCaseTest {
                 assertEquals(produto.getStatus(), atual.getStatus());
                 assertEquals(produto.getDescricao(), atual.getDescricao());
                 assertEquals(produto.getValor(), atual.getValor());
+            }
+
+            @DisplayName("Dado um produto com o campo status = ${status}")
+            @ParameterizedTest
+            @EnumSource(Produto.Status.class)
+            void teste2(Produto.Status status) {
+                //Given
+                var produto = Produto.builder()
+                        .nome("Produto1")
+                        .categoria("Categoria 1")
+                        .status(Produto.Status.AVAILABLE)
+                        .descricao("Descricao 1")
+                        .valor(new BigDecimal("1.99"))
+                        .foto(Foto.builder()
+                                .fileName("file-name-1.jpg")
+                                .base64("Y29udGVudC0x")
+                                .build())
+                        .build();
+
+                setField(produto, "status", status);
+
+                //When
+                var atual = cadastroProdutoUseCase.cadastrar(produto);
+
+                //Then
+                assertThat(produto.getStatus())
+                        .isEqualTo(status);
+            }
+
+            @DisplayName("Dado um produto com o campo status = ${status}")
+            @ParameterizedTest
+            @CsvSource(value = {
+                    "AVAILABLE | (Disponivel)",
+                    "PENDING   | (Pendente)",
+                    "SOLD      | (Vendido)",
+            }, delimiterString = "|")
+            void teste3(Produto.Status status, String descricaoEsperada) {
+                //Given
+                var produto = Produto.builder()
+                        .nome("Produto1")
+                        .categoria("Categoria 1")
+                        .status(Produto.Status.AVAILABLE)
+                        .descricao(descricaoEsperada)
+                        .valor(new BigDecimal("1.99"))
+                        .foto(Foto.builder()
+                                .fileName("file-name-1.jpg")
+                                .base64("Y29udGVudC0x")
+                                .build())
+                        .build();
+
+                setField(produto, "status", status);
+
+                //When
+                var atual = cadastroProdutoUseCase.cadastrar(produto);
+
+                //Then
+                assertThat(atual.getDescricao())
+                        .endsWith(descricaoEsperada);
             }
         }
 

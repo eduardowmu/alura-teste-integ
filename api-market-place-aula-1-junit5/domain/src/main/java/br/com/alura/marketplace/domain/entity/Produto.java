@@ -41,7 +41,7 @@ public class Produto implements Serializable {
     @Getter
     @RequiredArgsConstructor
     public enum Status {
-        AVAILABLE("Disponível"),
+        AVAILABLE("Disponivel"),
         PENDING("Pendente"),
         SOLD("Vendido");
 
