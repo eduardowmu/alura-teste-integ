@@ -1,6 +1,7 @@
 package br.com.alura.marketplace.domain.usecase;
 
 import br.com.alura.marketplace.domain.entity.Produto;
+import br.com.alura.marketplace.domain.exception.BusinessException;
 import br.com.alura.marketplace.domain.repository.BucketRepository;
 import br.com.alura.marketplace.domain.repository.PetStoreRepository;
 import br.com.alura.marketplace.domain.repository.ProdutoRepository;
@@ -24,6 +25,8 @@ public class CadastroProdutoUseCase {
 
     public Produto cadastrar(Produto produto) {
         validate(produto);
+
+        if(produto.getNome().contains("-")) throw new BusinessException("Nome não pode comçar com -");
 
         if (!produto.getFotos().isEmpty())
             produto.getFotos()

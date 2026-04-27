@@ -2,6 +2,7 @@ package br.com.alura.marketplace.domain.usecase;
 
 import br.com.alura.marketplace.domain.entity.Foto;
 import br.com.alura.marketplace.domain.entity.Produto;
+import br.com.alura.marketplace.domain.exception.BusinessException;
 import br.com.alura.marketplace.domain.repository.BucketRepository;
 import br.com.alura.marketplace.domain.repository.PetStoreRepository;
 import br.com.alura.marketplace.domain.repository.ProdutoRepository;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -43,7 +45,7 @@ class CadastroProdutoUseCaseTest {
     @DisplayName("Quando cadastrar produto")
     @Nested
     class Cadastrar {
-        @DisplayName("Então deve executar com sucesso")
+        @DisplayName("Entao deve executar com sucesso")
         @Nested
         class Sucesso {
             @BeforeEach
@@ -78,13 +80,39 @@ class CadastroProdutoUseCaseTest {
 
                 //THEN
                 assertEquals(produto.getNome(), atual.getNome());
+                assertEquals(produto.getCategoria(), atual.getCategoria());
+                assertEquals(produto.getStatus(), atual.getStatus());
+                assertEquals(produto.getDescricao(), atual.getDescricao());
+                assertEquals(produto.getValor(), atual.getValor());
             }
         }
 
-        @DisplayName("Então deve retornar erro")
+        @DisplayName("Entao deve retornar erro")
         @Nested
         class falha {
+            @DisplayName("Dado um produto com o nome que comece com -")
+            @Test
+            void teste1() {
+                //GIVEN
+                var produto = Produto.builder()
+                        .nome("-Produto1")
+                        .categoria("Categoria 1")
+                        .status(Produto.Status.AVAILABLE)
+                        .descricao("Descricao 1")
+                        .valor(new BigDecimal("1.99"))
+                        .foto(Foto.builder()
+                                .fileName("file-name-1.jpg")
+                                .base64("Y29udGVudC0x")
+                                .build())
+                        .build();
 
+                //WHEN
+                var atual = assertThrows(BusinessException.class,
+                        () -> cadastroProdutoUseCase.cadastrar(produto));
+
+                //THEN
+                assertThat(atual).hasMessage("Nome não pode comçar com -");
+            }
         }
     }
 }
